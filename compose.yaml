@@ -1,0 +1,37 @@
+services:
+  tg-ws-proxy:
+    image: lordarrin/tg-ws-proxy:latest
+    container_name: tg-ws-proxy
+    restart: unless-stopped
+
+    networks:
+      - shared-net
+
+    ports:
+      - "8443:8443"
+
+    environment:
+      PROXY_HOST: ${PROXY_HOST:-0.0.0.0}
+      PROXY_PORT: ${PROXY_PORT:-8443}
+      PROXY_SECRET: ${PROXY_SECRET:-}
+      CFPROXY_DOMAIN: ${CFPROXY_DOMAIN:-}
+      CFPROXY_WORKER_DOMAIN: ${CFPROXY_WORKER_DOMAIN:-}
+
+    security_opt:
+      - no-new-privileges:true
+
+    read_only: true
+
+    tmpfs:
+      - /tmp:noexec,nosuid,size=64m
+      - /home/app/.cache:noexec,nosuid,size=32m
+
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: "1"
+
+networks:
+  shared-net:
+    external: true
